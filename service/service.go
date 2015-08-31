@@ -18,15 +18,11 @@ func init() {
 }
 
 func handler(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, web service!\n\n")
-
 	stations, err := bart.GetStations(r)
 	if err != nil {
-		fmt.Fprint(w, "\nError getting stations: "+err.Error())
+		BuildResponseInternalServerError(w, r, err)
 	} else {
-		for k, v := range stations {
-			fmt.Fprintf(w, "\n%s: %s, %v, %v", k, v.Name, v.Lat, v.Long)
-		}
+		buildResponseSuccess(w, r, stations)
 	}
 }
 
