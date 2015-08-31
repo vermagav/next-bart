@@ -5,14 +5,19 @@ import (
 	"net/http"
 
 	"github.com/vermagav/next-bart/bart"
+	"github.com/zenazn/goji"
+	"github.com/zenazn/goji/web"
 )
 
 func init() {
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/name", handlerName)
+	http.Handle("/", goji.DefaultMux)
+
+	// Set up web handlers
+	goji.Get("/", handler)
+	goji.Get("/name/:name", handlerName)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello, web service!\n\n")
 
 	stations, err := bart.GetStations(r)
@@ -25,10 +30,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handlerName(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, web service!\nYour name is: ")
-	name := r.URL.Query().Get("name")
-	if len(name) != 0 {
-		w.Write([]byte(name))
-	}
+func handlerName(c web.C, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %s!", c.URLParams["name"])
 }
