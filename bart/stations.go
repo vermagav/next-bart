@@ -32,7 +32,7 @@ import (
 </root>
 */
 
-type Root struct {
+type StationRoot struct {
 	StationsSet Stations `xml:"stations"`
 }
 
@@ -77,7 +77,7 @@ func cacheAllStations(r *http.Request) error {
 	}
 
 	// Prepare object and unmarshal XML into it
-	root := Root{}
+	root := StationRoot{}
 	err = xml.Unmarshal(body, &root)
 	if err != nil {
 		return errParsingBody
