@@ -63,3 +63,5 @@ This project was completed in a [24 hour hack session](https://github.com/vermag
 * Isolate all distance/math logic inside another package.
 * As a summary of the three points above this one, `stations.go` is doing too much work right now. Functionality needs to be stripped out from within, and moved into their own systems as described above.
 * Add unit and integration tests.
+* Fix potential race condition which can occur during app startup: 2 concurrent requests try to populate cache at the same time.
+* More modular controls over returning 400s vs 500s, with a bubble-up error. The [Google Context Pattern](https://blog.golang.org/context) would be a good fit for such a task.
