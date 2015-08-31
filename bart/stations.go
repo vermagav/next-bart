@@ -60,8 +60,8 @@ func init() {
 func cacheAllStations(r *http.Request) error {
 	// Perform http request via app engine handler
 	c := appengine.NewContext(r)
-    client := urlfetch.Client(c)
-    resp, err := client.Get(config.Bart.StationsUrl)
+	client := urlfetch.Client(c)
+	resp, err := client.Get(config.Bart.StationsUrl)
 	//resp, err := http.Get(config.Bart.StationsUrl)
 	if err != nil {
 		return errCreatingRequest
