@@ -13,20 +13,8 @@ func init() {
 	http.Handle("/", goji.DefaultMux)
 
 	// Set up web handlers
-	goji.Get("/", handler)
 	goji.Get("/stations", stations)
 	goji.Get("/stations/:stationId", stationsId)
-}
-
-func handler(c web.C, w http.ResponseWriter, r *http.Request) {
-	stations, err := bart.GetStations(r, 0, 0., 0.)
-	if err != nil {
-		BuildResponseInternalServerError(w, r, err)
-		return
-	} else {
-		buildResponseSuccess(w, r, stations)
-		return
-	}
 }
 
 func stations(c web.C, w http.ResponseWriter, r *http.Request) {
