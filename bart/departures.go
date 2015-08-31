@@ -8,8 +8,6 @@ import (
 
 	"appengine"
 	"appengine/urlfetch"
-
-	"github.com/vermagav/next-bart/config"
 )
 
 // Response Schema for BART API -> get ETD
@@ -77,7 +75,7 @@ func GetDepartures(r *http.Request, stationId string) (*[]Etd, error) {
 	// Perform http request via app engine handler
 	c := appengine.NewContext(r)
 	client := urlfetch.Client(c)
-	resp, err := client.Get(config.Bart.EtdUrl + stationId)
+	resp, err := client.Get(Config.EtdUrl + stationId)
 	if err != nil {
 		return nil, errCreatingRequest
 	}

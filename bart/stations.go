@@ -9,8 +9,6 @@ import (
 
 	"appengine"
 	"appengine/urlfetch"
-
-	"github.com/vermagav/next-bart/config"
 )
 
 // Response Schema for BART API -> get all stations
@@ -64,7 +62,7 @@ func cacheAllStations(r *http.Request) error {
 	// Perform http request via app engine handler
 	c := appengine.NewContext(r)
 	client := urlfetch.Client(c)
-	resp, err := client.Get(config.Bart.StationsUrl)
+	resp, err := client.Get(Config.StationsUrl)
 	if err != nil {
 		return errCreatingRequest
 	}
