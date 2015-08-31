@@ -15,6 +15,8 @@ In this version, there are two major packages:
   |-- stations.go
 /service
   |--errors.go
+  |--parse.go
+  |--parse_test.go
   |--response.go
   |--service.go
 ```
@@ -45,6 +47,14 @@ The service package is responsible for handling web service requests.
 
 This file contains definitions for errors encountered by the package. These errors are returned and forwarded to the `response.go` methods for consumption in the response payload.
 
+##### [parse.go](../service/parse.go)
+
+This file contains helper functions for parsing query parameters. They were separated in order to be tested in isolation.
+
+##### [parse_test.go](../service/parse_test.go)
+
+This file contains unit tests for `parse.go`.
+
 ##### [response.go](../service/response.go)
 
 This file contains helper methods that create success, bad request, and internal server error responses with the appropriate HTTP response codes and headers. Wrapping all responses in these methods also allows for a consistent response schema.
@@ -62,6 +72,6 @@ This project was completed in a [24 hour hack session](https://github.com/vermag
 * Create a generic HTTP request module and make all calls to external APIs go through it.
 * Isolate all distance/math logic inside another package.
 * As a summary of the three points above this one, `stations.go` is doing too much work right now. Functionality needs to be stripped out from within, and moved into their own systems as described above.
-* Add unit and integration tests.
+* Add more unit and integration tests.
 * Fix potential race condition which can occur during app startup: 2 concurrent requests try to populate cache at the same time.
 * More modular controls over returning 400s vs 500s, with a bubble-up error. The [Google Context Pattern](https://blog.golang.org/context) would be a good fit for such a task.

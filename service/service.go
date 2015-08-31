@@ -2,7 +2,6 @@ package service
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/vermagav/next-bart/bart"
@@ -27,38 +26,16 @@ func stations(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse count: if included, try to convert to int, default to 0
-	count := 0
-	countRaw := r.Form.Get("count")
-	if countRaw != "" {
-		// If the count param was included, try to convert to int
-		count, err = strconv.Atoi(countRaw)
-		if err != nil {
-			BuildResponseBadRequest(w, r, errParsingQueryParams)
-			return
-		}
-		if count <= 0 {
-			BuildResponseBadRequest(w, r, errCountInvalid)
-			return
-		}
+	// Parse count
+	count, err := parseCount(r.Form.Get("count"))
+	if err != nil {
+		BuildResponseBadRequest(w, r, err)
 	}
 
-	// Parse lat/long: if included, try to convert to float, default to 0.0f
-	lat := 0.
-	long := 0.
-	latRaw := r.Form.Get("lat")
-	longRaw := r.Form.Get("long")
-	if latRaw != "" || longRaw != "" {
-		lat, err = strconv.ParseFloat(latRaw, 64)
-		if err != nil {
-			BuildResponseBadRequest(w, r, errParsingQueryParams)
-			return
-		}
-		long, err = strconv.ParseFloat(longRaw, 64)
-		if err != nil {
-			BuildResponseBadRequest(w, r, errParsingQueryParams)
-			return
-		}
+	// Parse lat/long
+	lat, long, err := parseLatLong(r.Form.Get("lat"), r.Form.Get("long"))
+	if err != nil {
+		BuildResponseBadRequest(w, r, err)
 	}
 
 	// Fetch station data and return
