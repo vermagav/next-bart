@@ -111,7 +111,7 @@ curl -i "http://next-bart.appspot.com/stations?count=1&lat=37.779528&long=-122.4
 
 | Param | Type | Purpose |
 |-------|------|---------|
-| `stationId` | string | The short abbreviated string ID for a station returned by ``/stations` |
+| `stationId` | string | The short abbreviated string ID for a station returned by `/stations` |
 
 ##### Examples
 
@@ -141,7 +141,7 @@ curl -i "http://next-bart.appspot.com/stations/CIVC"
 
 | Param | Type | Purpose |
 |-------|------|---------|
-| `stationId` | string | The short abbreviated string ID for a station returned by ``/stations` |
+| `stationId` | string | The short abbreviated string ID for a station returned by `/stations` |
 
 ##### Examples
 
