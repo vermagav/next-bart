@@ -13,21 +13,21 @@ import (
 
 // Response Schema for BART API -> get all stations
 /*
-	<root>
-		<stations>
-			<station>
-				<name>12th St. Oakland City Center</name>
-				<abbr>12TH</abbr>
-				<gtfs_latitude>37.803664</gtfs_latitude>
-				<gtfs_longitude>-122.271604</gtfs_longitude>
-				<address>1245 Broadway</address>
-				<city>Oakland</city>
-				<county>alameda</county>
-				<state>CA</state>
-				<zipcode>94612</zipcode>
-			</station>
-		</stations>
-	</root>
+<root>
+  <stations>
+    <station>
+      <name>12th St. Oakland City Center</name>
+      <abbr>12TH</abbr>
+      <gtfs_latitude>37.803664</gtfs_latitude>
+      <gtfs_longitude>-122.271604</gtfs_longitude>
+      <address>1245 Broadway</address>
+      <city>Oakland</city>
+      <county>alameda</county>
+      <state>CA</state>
+      <zipcode>94612</zipcode>
+    </station>
+  </stations>
+</root>
 */
 
 type Root struct {
@@ -62,7 +62,6 @@ func cacheAllStations(r *http.Request) error {
 	c := appengine.NewContext(r)
 	client := urlfetch.Client(c)
 	resp, err := client.Get(config.Bart.StationsUrl)
-	//resp, err := http.Get(config.Bart.StationsUrl)
 	if err != nil {
 		return errCreatingRequest
 	}
