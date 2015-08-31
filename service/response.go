@@ -8,15 +8,15 @@ import (
 
 // Normalize all responses to fit inside this outer schema
 type Response struct {
-	Data interface{} `json:"Data"`
+	Data  interface{} `json:"Data"`
 	Error interface{} `json:"error"`
 }
 
-// Build a success response with HTTP status 200 and json data
+// Build a success response with HTTP status 200 and json response data
 func buildResponseSuccess(w http.ResponseWriter, r *http.Request, data interface{}) {
 	// Set up JSON response
 	body, err := json.Marshal(Response{
-		Data: data,
+		Data:  data,
 		Error: nil,
 	})
 	if err != nil {
@@ -33,11 +33,11 @@ func buildResponseSuccess(w http.ResponseWriter, r *http.Request, data interface
 	io.WriteString(w, string(body))
 }
 
-// Build a failure response with HTTP status 400 and error data
+// Build a failure response with HTTP status 400 and json error data
 func BuildResponseBadRequest(w http.ResponseWriter, r *http.Request, err error) {
 	// Set up JSON response
 	body, err := json.Marshal(Response{
-		Data: nil,
+		Data:  nil,
 		Error: err.Error(),
 	})
 	if err != nil {
@@ -54,11 +54,11 @@ func BuildResponseBadRequest(w http.ResponseWriter, r *http.Request, err error) 
 	io.WriteString(w, string(body))
 }
 
-// Build a failure response with HTTP status 500 and error data
+// Build a failure response with HTTP status 500 and json error data
 func BuildResponseInternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	// Set up JSON response
 	body, err := json.Marshal(Response{
-		Data: nil,
+		Data:  nil,
 		Error: err.Error(),
 	})
 	if err != nil {

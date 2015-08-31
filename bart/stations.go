@@ -90,7 +90,7 @@ func cacheAllStations(r *http.Request) error {
 
 // GetStations is a publicly exported function that returns the map
 // of pre-cached stations.
-func GetStations(r *http.Request) (map[string]Station, error) {
+func GetStations(r *http.Request, count int) ([]Station, error) {
 	// Do we have a cached list of stations?
 	if len(stationsCache) == 0 {
 		// Try to fetch again
@@ -100,5 +100,31 @@ func GetStations(r *http.Request) (map[string]Station, error) {
 		}
 	}
 
-	return stationsCache, nil
+	// If a valid count wasn't included, return all
+	if count <= 0 || count > len(stationsCache) {
+		count = len(stationsCache)
+	}
+
+	// Create an array of requested station count
+	stationsList := make([]Station, count)
+	i := 0
+	for _, v := range stationsCache {
+		stationsList[i] = v
+		i++
+		if i >= count {
+			break
+		}
+	}
+
+	return stationsList, nil
+}
+
+// Fetch information about a spedcific station by its id
+func GetStationbyId(r *http.Request, id string) (*Station, error) {
+	// Does this station id exist?
+	if station, ok := stationsCache[id]; ok {
+		return &station, nil
+	} else {
+		return nil, errStationNotFound
+	}
 }
