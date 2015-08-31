@@ -19,7 +19,7 @@ func init() {
 }
 
 func handler(c web.C, w http.ResponseWriter, r *http.Request) {
-	stations, err := bart.GetStations(r, 0)
+	stations, err := bart.GetStations(r, 0, 0., 0.)
 	if err != nil {
 		BuildResponseInternalServerError(w, r, err)
 		return
@@ -30,22 +30,45 @@ func handler(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func stations(c web.C, w http.ResponseWriter, r *http.Request) {
-	// Grab query parameters
+	// Grab query parameters and parse into map
 	err := r.ParseForm()
 	if err != nil {
 		BuildResponseBadRequest(w, r, errParsingQueryParams)
 		return
 	}
-	count, err := strconv.Atoi(r.Form.Get("count"))
-	if err != nil {
-		BuildResponseBadRequest(w, r, errParsingQueryParams)
-		return
+
+	// Parse count: if included, try to convert to int, default to 0
+	count := 0
+	countRaw := r.Form.Get("count")
+	if countRaw != "" {
+		// If the count param was included, try to convert to int
+		count, err = strconv.Atoi(countRaw)
+		if err != nil {
+			BuildResponseBadRequest(w, r, errParsingQueryParams)
+			return
+		}
 	}
-	// lat := r.Form.Get("lat")
-	// long := r.Form.Get("long")
+
+	// Parse lat/long: if included, try to convert to float, default to 0.0f
+	lat := 0.
+	long := 0.
+	latRaw := r.Form.Get("lat")
+	longRaw := r.Form.Get("long")
+	if latRaw != "" || longRaw != "" {
+		lat, err = strconv.ParseFloat(latRaw, 64)
+		if err != nil {
+			BuildResponseBadRequest(w, r, errParsingQueryParams)
+			return
+		}
+		long, err = strconv.ParseFloat(longRaw, 64)
+		if err != nil {
+			BuildResponseBadRequest(w, r, errParsingQueryParams)
+			return
+		}
+	}
 
 	// Fetch station data and return
-	stations, err := bart.GetStations(r, count)
+	stations, err := bart.GetStations(r, count, lat, long)
 	if err != nil {
 		BuildResponseInternalServerError(w, r, err)
 		return
@@ -56,7 +79,10 @@ func stations(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func stationsId(c web.C, w http.ResponseWriter, r *http.Request) {
+	// Grab URL parameter
 	id := c.URLParams["stationId"]
+
+	// Fetch station data and return
 	station, err := bart.GetStationbyId(r, id)
 	if err != nil {
 		BuildResponseBadRequest(w, r, err)

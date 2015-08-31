@@ -3,7 +3,9 @@ package bart
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"math"
 	"net/http"
+	"sort"
 
 	"appengine"
 	"appengine/urlfetch"
@@ -39,10 +41,11 @@ type Stations struct {
 }
 
 type Station struct {
-	Id   string  `xml:"abbr"`
-	Name string  `xml:"name"`
-	Lat  float64 `xml:"gtfs_latitude"`
-	Long float64 `xml:"gtfs_longitude"`
+	Id       string  `xml:"abbr"`
+	Name     string  `xml:"name"`
+	Lat      float64 `xml:"gtfs_latitude"`
+	Long     float64 `xml:"gtfs_longitude"`
+	distance float64 // Lower case, not exported to JSON
 }
 
 // This is a cache of information on all station, keyed by id
@@ -90,7 +93,7 @@ func cacheAllStations(r *http.Request) error {
 
 // GetStations is a publicly exported function that returns the map
 // of pre-cached stations.
-func GetStations(r *http.Request, count int) ([]Station, error) {
+func GetStations(r *http.Request, count int, lat float64, long float64) ([]Station, error) {
 	// Do we have a cached list of stations?
 	if len(stationsCache) == 0 {
 		// Try to fetch again
@@ -100,23 +103,34 @@ func GetStations(r *http.Request, count int) ([]Station, error) {
 		}
 	}
 
+	// Do we need to compute distance?
+	needDistance := true
+	if lat == 0. && long == 0. {
+		needDistance = false
+	}
+
+	// Create an array, computing distance if necessary
+	stationsList := make([]Station, len(stationsCache))
+	i := 0
+	for _, v := range stationsCache {
+		stationsList[i] = v
+		if needDistance {
+			stationsList[i].distance = computeDistance(v.Lat, v.Long, lat, long)
+		}
+		i++
+	}
+
+	// If we computed distance, sort list by it
+	if needDistance {
+		sort.Sort(ByDistance(stationsList))
+	}
+
 	// If a valid count wasn't included, return all
 	if count <= 0 || count > len(stationsCache) {
 		count = len(stationsCache)
 	}
 
-	// Create an array of requested station count
-	stationsList := make([]Station, count)
-	i := 0
-	for _, v := range stationsCache {
-		stationsList[i] = v
-		i++
-		if i >= count {
-			break
-		}
-	}
-
-	return stationsList, nil
+	return stationsList[:count], nil
 }
 
 // Fetch information about a spedcific station by its id
@@ -128,3 +142,16 @@ func GetStationbyId(r *http.Request, id string) (*Station, error) {
 		return nil, errStationNotFound
 	}
 }
+
+// Compute the distance squared between two points. Since we only use this
+// for comparison, we don't need to waste computation on square root.
+func computeDistance(x1 float64, y1 float64, x2 float64, y2 float64) float64 {
+	distanceSquared := math.Pow((x2 - x1), 2) + math.Pow((y2 - y1), 2)
+	return distanceSquared
+}
+
+// Implement an interface that supports sorting by distance
+type ByDistance []Station
+func (a ByDistance) Len() int           { return len(a) }
+func (a ByDistance) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByDistance) Less(i, j int) bool { return a[i].distance < a[j].distance }
