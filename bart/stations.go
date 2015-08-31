@@ -146,12 +146,13 @@ func GetStationbyId(r *http.Request, id string) (*Station, error) {
 // Compute the distance squared between two points. Since we only use this
 // for comparison, we don't need to waste computation on square root.
 func computeDistance(x1 float64, y1 float64, x2 float64, y2 float64) float64 {
-	distanceSquared := math.Pow((x2 - x1), 2) + math.Pow((y2 - y1), 2)
+	distanceSquared := math.Pow((x2-x1), 2) + math.Pow((y2-y1), 2)
 	return distanceSquared
 }
 
 // Implement an interface that supports sorting by distance
 type ByDistance []Station
+
 func (a ByDistance) Len() int           { return len(a) }
 func (a ByDistance) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByDistance) Less(i, j int) bool { return a[i].distance < a[j].distance }

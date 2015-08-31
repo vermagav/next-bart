@@ -47,6 +47,10 @@ func stations(c web.C, w http.ResponseWriter, r *http.Request) {
 			BuildResponseBadRequest(w, r, errParsingQueryParams)
 			return
 		}
+		if count <= 0 {
+			BuildResponseBadRequest(w, r, errCountInvalid)
+			return
+		}
 	}
 
 	// Parse lat/long: if included, try to convert to float, default to 0.0f
