@@ -52,7 +52,7 @@ func ConstructEtdUrl() string {
 	return b.String()
 }
 
-// init() is called once per package initialization
+// init() is called once per file initialization
 func init() {
 	Bart.ApiUrl = "http://api.bart.gov/api"
 	Bart.ApiKey = "?key=MW9S-E7SL-26DU-VV8V"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/vermagav/next-bart/config"
+	"github.com/vermagav/next-bart/bart"
 )
 
 func init() {
@@ -13,9 +13,16 @@ func init() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, web service!")
-	fmt.Fprintf(w, "\nStationsUrl: " + config.Bart.StationsUrl)
-	fmt.Fprintf(w, "\nStationsUrl: " + config.Bart.EtdUrl)
+	fmt.Fprint(w, "Hello, web service!\n\n")
+
+	stations, err := bart.GetStations(r)
+	if err != nil {
+		fmt.Fprint(w, "\nError getting stations: "+err.Error())
+	} else {
+		for k, v := range stations {
+			fmt.Fprintf(w, "\n%s: %s, %v, %v", k, v.Name, v.Lat, v.Long)
+		}
+	}
 }
 
 func handlerName(w http.ResponseWriter, r *http.Request) {
